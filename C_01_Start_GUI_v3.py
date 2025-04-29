@@ -111,6 +111,7 @@ class StartGame:
                 else:
                     has_errors = "yes"
 
+
             except ValueError:
                 has_errors = "yes"
             # Display the rounds error if necessary
@@ -122,7 +123,8 @@ class StartGame:
         else:
             self.choose_label.config(text=game_error, fg="#990000",
                                      font=("Arial", "10", "bold"))
-
+            self.num_rounds_entry.config(bg="#F4CCCC")
+            self.num_rounds_entry.delete(0, END)
 
 
 class Play:
@@ -132,7 +134,7 @@ class Play:
 
     def __init__(self, how_many, game_type):
         self.play_box = Toplevel()
-        if game_type == "1":
+        if game_type == 1:
 
             self.game_frame = Frame(self.play_box)
             self.game_frame.grid(padx=10, pady=10)
@@ -145,7 +147,7 @@ class Play:
                                             font=("Arial", "16", "bold"))
             self.game_heading_label.grid(row=1)
 
-        elif game_type == "2":
+        elif game_type == 2:
 
             self.game_frame = Frame(self.play_box)
             self.game_frame.grid(padx=10, pady=10)
@@ -154,7 +156,7 @@ class Play:
                                          font=("Arial", "16", "bold"))
             self.game_type_label.grid(row=0)
 
-            self.game_heading_label = Label(self.game_frame, text=f"Round 0 of {how_many}",
+            self.game_heading_label = Label(self.game_frame, text=f"Round 1 of {how_many}",
                                             font=("Arial", "16", "bold"))
             self.game_heading_label.grid(row=1)
 
