@@ -82,37 +82,47 @@ class StartGame:
 
         # Frame so that entry box and button can be in the same row.
 
+        self.gametype_area_frame = Frame(self.start_frame)
+        self.gametype_area_frame.grid(row=3)
+
         self.entry_area_frame = Frame(self.start_frame)
-        self.entry_area_frame.grid(row=3)
+        self.entry_area_frame.grid(row=4)
 
         # Value used to find which game is selected
         self.game_type = StringVar()
         self.game_type.set("0")
 
         # Radio Buttons | Allows user to select whether they play the Greek / Roman Quiz or Gods Name Quiz
-        self.greek_roman_quiz_select = Radiobutton(self.entry_area_frame, font=("Arial", "20", "bold"),
+        self.greek_roman_quiz_select = Radiobutton(self.gametype_area_frame, font=("Arial", "20", "bold"),
                                                    variable=self.game_type,
-                                                   value=1, indicator=0, text="Greek / Roman", width=15, height=1,
+                                                   value=1, indicator=0, text="Greek / Roman", width=11, height=1,
                                                    bg="#FF9999", fg="#FFFFFF", selectcolor="#f5a3a3")
 
         self.greek_roman_quiz_select.grid(row=1, column=0, padx=10, pady=10)
 
-        self.god_name_quiz_select = Radiobutton(self.entry_area_frame, font=("Arial", "20", "bold"),
+        self.god_name_quiz_select = Radiobutton(self.gametype_area_frame, font=("Arial", "20", "bold"),
                                                 variable=self.game_type,
-                                                value=2, indicator=0, text="God Name", width=15,
+                                                value=2, indicator=0, text="God Name", width=11,
                                                 bg="#96C5F7", fg="#FFFFFF", selectcolor="#bbd8fa")
 
         self.god_name_quiz_select.grid(row=1, column=1, padx=10, pady=10)
 
+        self.mixed_quiz_select = Radiobutton(self.gametype_area_frame, font=("Arial", "20", "bold"),
+                                                variable=self.game_type,
+                                                value=3, indicator=0, text="God Name", width=11,
+                                                bg="#96C5F7", fg="#FFFFFF", selectcolor="#bbd8fa")
+
+        self.mixed_quiz_select.grid(row=1, column=2, padx=10, pady=10)
+
         # Gets number of rounds user wants to play
         self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", "20", "bold"),
-                                      width=16)
+                                      width=19)
 
         self.num_rounds_entry.grid(row=2, column=0, padx=10, pady=10)
 
         # Create play button
         self.play_button = Button(self.entry_area_frame, font=("Arial", "20", "bold"),
-                                  fg="#FFFFFF", bg="#0B6E4F", text="Play", width=14, height=1,
+                                  fg="#FFFFFF", bg="#0B6E4F", text="Play", width=19, height=1,
                                   command=self.check_rounds_game)
         self.play_button.grid(row=2, column=1)
 
