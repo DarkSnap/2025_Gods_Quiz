@@ -18,15 +18,15 @@ def get_gods_name_desc():
     return all_gods
 
 
-def get_round_gods_desc(game_type):
+def get_round_gods_desc(quiz_type):
     """Choose gods depending on the game type."""
     all_gods_list = get_gods_name_desc()
 
-    if game_type == 1:
+    if quiz_type == 1:
         potential_god = random.choice(all_gods_list)
         return potential_god[2], potential_god[0]
 
-    elif game_type == 2:
+    elif quiz_type == 2:
         round_gods = []
         round_god_description = set()
 
@@ -42,8 +42,10 @@ def get_round_gods_desc(game_type):
 
 
 
+
+
 # Class starts here
-class StartGame:
+class StartQuiz:
 
     def __init__(self):
 
@@ -82,37 +84,30 @@ class StartGame:
 
         # Frame so that entry box and button can be in the same row.
 
-        self.gametype_area_frame = Frame(self.start_frame)
-        self.gametype_area_frame.grid(row=3)
+        self.quiztype_area_frame = Frame(self.start_frame)
+        self.quiztype_area_frame.grid(row=3)
 
         self.entry_area_frame = Frame(self.start_frame)
         self.entry_area_frame.grid(row=4)
 
         # Value used to find which game is selected
-        self.game_type = StringVar()
-        self.game_type.set("0")
+        self.quiz_type = StringVar()
+        self.quiz_type.set("0")
 
         # Radio Buttons | Allows user to select whether they play the Greek / Roman Quiz or Gods Name Quiz
-        self.greek_roman_quiz_select = Radiobutton(self.gametype_area_frame, font=("Arial", "20", "bold"),
-                                                   variable=self.game_type,
-                                                   value=1, indicator=0, text="Greek / Roman", width=11, height=1,
+        self.greek_roman_quiz_select = Radiobutton(self.quiztype_area_frame, font=("Arial", "20", "bold"),
+                                                   variable=self.quiz_type,
+                                                   value=1, indicator=0, text="Greek / Roman", width=17, height=1,
                                                    bg="#FF9999", fg="#FFFFFF", selectcolor="#f5a3a3")
 
         self.greek_roman_quiz_select.grid(row=1, column=0, padx=10, pady=10)
 
-        self.god_name_quiz_select = Radiobutton(self.gametype_area_frame, font=("Arial", "20", "bold"),
-                                                variable=self.game_type,
-                                                value=2, indicator=0, text="God Name", width=11,
+        self.god_name_quiz_select = Radiobutton(self.quiztype_area_frame, font=("Arial", "20", "bold"),
+                                                variable=self.quiz_type,
+                                                value=2, indicator=0, text="God Name", width=17,
                                                 bg="#96C5F7", fg="#FFFFFF", selectcolor="#bbd8fa")
 
         self.god_name_quiz_select.grid(row=1, column=1, padx=10, pady=10)
-
-        self.mixed_quiz_select = Radiobutton(self.gametype_area_frame, font=("Arial", "20", "bold"),
-                                                variable=self.game_type,
-                                                value=3, indicator=0, text="God Name", width=11,
-                                                bg="#96C5F7", fg="#FFFFFF", selectcolor="#bbd8fa")
-
-        self.mixed_quiz_select.grid(row=1, column=2, padx=10, pady=10)
 
         # Gets number of rounds user wants to play
         self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", "20", "bold"),
@@ -123,17 +118,17 @@ class StartGame:
         # Create play button
         self.play_button = Button(self.entry_area_frame, font=("Arial", "20", "bold"),
                                   fg="#FFFFFF", bg="#0B6E4F", text="Play", width=19, height=1,
-                                  command=self.check_rounds_game)
+                                  command=self.check_rounds_quiz)
         self.play_button.grid(row=2, column=1)
 
-    def check_rounds_game(self):
+    def check_rounds_quiz(self):
         """
         Checks users have entered 1 or more rounds and the game type
         """
 
         # Retrieves number of rounds to be played
         rounds_wanted = self.num_rounds_entry.get()
-        game_type = self.game_type.get()
+        quiz_type = self.quiz_type.get()
 
         # Reset label and entry box (for when users come back to home screen)
         self.choose_label.config(fg="#009900", font=("Arial", "16", "bold"))
@@ -141,17 +136,17 @@ class StartGame:
 
         rounds_error = "Oops - Please choose a whole number more then zero"
         has_errors = "no"
-        game_error = "Oops - Please choose a game type"
+        quiz_error = "Oops - Please choose a game type"
 
         # Checks that game type has been selected
-        game_type = int(game_type)
-        if game_type == 1 or game_type == 2:
+        quiz_type = int(quiz_type)
+        if quiz_type == 1 or quiz_type == 2:
             # Checks that rounds to be player is a number above zero
             try:
                 rounds_wanted = int(rounds_wanted)
                 if rounds_wanted > 0:
                     # Invoke Player Class (and take across number of rounds)
-                    Play(rounds_wanted, game_type)
+                    Play(rounds_wanted, quiz_type)
                     # Hide root window (ie: hide rounds choice window).
                     root.withdraw()
 
@@ -168,7 +163,7 @@ class StartGame:
                 self.num_rounds_entry.config(bg="#F4CCCC")
                 self.num_rounds_entry.delete(0, END)
         else:
-            self.choose_label.config(text=game_error, fg="#990000",
+            self.choose_label.config(text=quiz_error, fg="#990000",
                                      font=("Arial", "10", "bold"))
             self.num_rounds_entry.config(bg="#F4CCCC")
             self.num_rounds_entry.delete(0, END)
@@ -177,10 +172,10 @@ class StartGame:
 class Play:
     """Interface for playing the God Quest Game"""
 
-    def __init__(self, how_many, game_type):
-        get_round_gods_desc(game_type)
+    def __init__(self, how_many, quiz_type):
+        get_round_gods_desc(quiz_type)
 
-        if game_type == 1:
+        if quiz_type == 1:
             self.target_description = StringVar
 
             # Rounds played | start with zero
@@ -197,8 +192,8 @@ class Play:
 
             self.play_box = Toplevel()
 
-            self.game_frame = Frame(self.play_box)
-            self.game_frame.grid(padx=10, pady=10)
+            self.quiz_frame = Frame(self.play_box)
+            self.quiz_frame.grid(padx=10, pady=10)
 
             # Body font for most labels...
             body_font = ("Arial", "12")
@@ -213,7 +208,7 @@ class Play:
 
             play_labels_ref = []
             for item in play_labels_list:
-                self.make_label = Label(self.game_frame, text=item[0], font=item[1],
+                self.make_label = Label(self.quiz_frame, text=item[0], font=item[1],
                                         bg=item[2], wraplength=300, justify="left")
                 self.make_label.grid(row=item[3], pady=10, padx=10)
 
@@ -225,7 +220,7 @@ class Play:
             self.results_label = play_labels_ref[3]
 
             # Set up colour buttons...
-            self.greek_roman_name_frame = Frame(self.game_frame)
+            self.greek_roman_name_frame = Frame(self.quiz_frame)
             self.greek_roman_name_frame.grid(row=4)
 
             self.greek_roman_button_ref = []
@@ -233,21 +228,21 @@ class Play:
             # Greek and Roman Option frames
             self.greek_button = Button(self.greek_roman_name_frame, font=body_font,
                                         text="Greek", width=23,
-                                        bg="#FFFFFF",
-                                        command=partial(self.rounds_results, "Greek", game_type))
+                                        bg="#ff9999",
+                                        command=partial(self.rounds_results, "Greek", quiz_type))
             self.greek_button.grid(row=0,column=0, padx=5, pady=5)
 
             self.greek_roman_button_ref.append(self.greek_button)
 
             self.roman_button = Button(self.greek_roman_name_frame, font=body_font,
                                        text="Roman", width=23,
-                                       bg="#FFFFFF",
-                                       command=partial(self.rounds_results, "Roman", game_type))
+                                       bg="#96c5f7",
+                                       command=partial(self.rounds_results, "Roman", quiz_type))
             self.roman_button.grid(row=0, column=1, padx=5, pady=5)
             self.greek_roman_button_ref.append(self.roman_button)
 
             # Frame to hold hints and stats buttons
-            self.hints_stats_frame = Frame(self.game_frame)
+            self.hints_stats_frame = Frame(self.quiz_frame)
             self.hints_stats_frame.grid(row=6)
 
             # List for buttons (frame | text | bg | command | width | row | column )
@@ -255,7 +250,7 @@ class Play:
                 [self.hints_stats_frame, "Next Round", "#0057D8", lambda: self.new_round(1), 10, 0, 2],
                 [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
                 [self.hints_stats_frame, "Stats", "#333333", "", 10, 0, 1],
-                [self.game_frame, "End", "#990000", self.close_play, 33, 7, None]
+                [self.quiz_frame, "End", "#990000", self.close_play, 33, 7, None]
             ]
 
             # Create buttons and add to list
@@ -271,12 +266,12 @@ class Play:
             # Retrieve next, stats and end button so that they can be configured.
             self.next_button = control_ref_list[0]
             self.stats_button = control_ref_list[2]
-            self.end_game_button = control_ref_list[3]
+            self.end_quiz_button = control_ref_list[3]
 
             self.new_round(1)
 
 
-        if game_type == 2:
+        if quiz_type == 2:
             self.target_description = StringVar
 
             # Rounds played | start with zero
@@ -293,8 +288,8 @@ class Play:
 
             self.play_box = Toplevel()
 
-            self.game_frame = Frame(self.play_box)
-            self.game_frame.grid(padx=10, pady=10)
+            self.quiz_frame = Frame(self.play_box)
+            self.quiz_frame.grid(padx=10, pady=10)
 
             # Body font for most labels...
             body_font = ("Arial", "12")
@@ -309,7 +304,7 @@ class Play:
 
             play_labels_ref = []
             for item in play_labels_list:
-                self.make_label = Label(self.game_frame, text=item[0], font=item[1],
+                self.make_label = Label(self.quiz_frame, text=item[0], font=item[1],
                                         bg=item[2], wraplength=300, justify="left")
                 self.make_label.grid(row=item[3], pady=10, padx=10)
 
@@ -321,21 +316,21 @@ class Play:
             self.results_label = play_labels_ref[3]
 
             # Set up colour buttons...
-            self.gods_name_frame = Frame(self.game_frame)
+            self.gods_name_frame = Frame(self.quiz_frame)
             self.gods_name_frame.grid(row=4)
 
             self.gods_button_ref = []
 
             # Colours for buttons in grid
-            button_colors = ["red", "blue", "green", "yellow"]
+            button_colors = ["#ff9999", "#96c5f7", "#a18eb3", "#9ac7bf"]
 
             # Create four buttons in a 2 x 2 grid
             for item in range(4):
-                self.gods_button = Button(self.gods_name_frame, font=body_font,
-                                            text="Gods Name", width=23,
+                self.gods_button = Button(self.gods_name_frame, font=("Arial", "12", "bold"),
+                                            text="Gods Name", width=20,
                                             bg=button_colors[item],
                                             fg="white",
-                                            command=partial(self.rounds_results, item, game_type))
+                                            command=partial(self.rounds_results, item, quiz_type))
                 self.gods_button.grid(row=item // 2,
                                         column=item % 2,
                                         padx=5, pady=5)
@@ -344,7 +339,7 @@ class Play:
 
 
             # Frame to hold hints and stats buttons
-            self.hints_stats_frame = Frame(self.game_frame)
+            self.hints_stats_frame = Frame(self.quiz_frame)
             self.hints_stats_frame.grid(row=6)
 
             # List for buttons (frame | text | bg | command | width | row | column )
@@ -352,7 +347,7 @@ class Play:
                 [self.hints_stats_frame, "Next Round", "#0057D8", lambda: self.new_round(2), 10, 0, 2],
                 [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
                 [self.hints_stats_frame, "Stats", "#333333", "", 10, 0, 1],
-                [self.game_frame, "End", "#990000", self.close_play, 33, 7, None]
+                [self.quiz_frame, "End", "#990000", self.close_play, 33, 7, None]
             ]
 
             # Create buttons and add to list
@@ -368,19 +363,19 @@ class Play:
             # Retrieve next, stats and end button so that they can be configured.
             self.next_button = control_ref_list[0]
             self.stats_button = control_ref_list[2]
-            self.end_game_button = control_ref_list[3]
+            self.end_quiz_button = control_ref_list[3]
 
             self.new_round(2)
 
 
-    def new_round(self, game_type):
+    def new_round(self, quiz_type):
         # Retrieve number of rounds played, add one to it and configure heading
         rounds_played = self.rounds_played.get()
         rounds_played += 1
         self.rounds_played.set(rounds_played)
         rounds_wanted = self.rounds_wanted.get()
 
-        if game_type == 1:
+        if quiz_type == 1:
             # Get round colours and median score...
             self.round_god, round_god_origin = get_round_gods_desc(1)
 
@@ -395,9 +390,9 @@ class Play:
 
         self.next_button.config(state=DISABLED)
 
-        if game_type == 2:
+        if quiz_type == 2:
             # Get round colours and median score...
-            self.round_gods_list, description = get_round_gods_desc(1)
+            self.round_gods_list, description = get_round_gods_desc(2)
 
             self.target_description = description
 
@@ -409,9 +404,9 @@ class Play:
                 item.config(text=self.round_gods_list[count][2], state=NORMAL)
 
 
-    def rounds_results(self, user_choice, game_type):
+    def rounds_results(self, user_choice, quiz_type):
 
-        if game_type == 1:
+        if quiz_type == 1:
             # Get user score on button press...
             score = user_choice
 
@@ -434,7 +429,7 @@ class Play:
             for item in self.greek_roman_button_ref:
                 item.config(state=DISABLED)
 
-        if game_type == 2:
+        if quiz_type == 2:
             # Get user score and colour based on button press...
             score = self.round_gods_list[user_choice][3]
 
@@ -470,7 +465,7 @@ class Play:
 
         if rounds_played == rounds_wanted:
             self.next_button.config(state=DISABLED, text="Game Over")
-            self.end_game_button.config(text="Play Again", bg="#006600")
+            self.end_quiz_button.config(text="Play Again", bg="#006600")
 
 
 
@@ -481,5 +476,5 @@ class Play:
 if __name__ == "__main__":
     root = Tk()
     root.title("God Quest")
-    StartGame()
+    StartQuiz()
     root.mainloop()

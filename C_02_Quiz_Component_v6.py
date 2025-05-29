@@ -182,12 +182,15 @@ class Play:
         get_round_gods_desc(quiz_type)
 
         if quiz_type == 3:
-            self.mixed = True
-            quiz_type_list = [1, 2, 1, 2, 1, 1]
-            quiz_type = quiz_type_list[0]
+            original_quiz_type = quiz_type
+            if original_quiz_type == 3:
+                quiz_type_list = [1, 2, 1, 2, 1, 1]
+                index = 0
+                for i in range(how_many):
+                    self.current_quiz_type = quiz_type_list[index]
+                    index = (index +1 % len(quiz_type_list))
 
-
-        if quiz_type == 1:
+        if quiz_type == 1 or self.current_quiz_type == 1:
             self.target_description = StringVar
 
             # Rounds played | start with zero
@@ -259,7 +262,7 @@ class Play:
 
             # List for buttons (frame | text | bg | command | width | row | column )
             control_button_list = [
-                [self.hints_stats_frame, "Next Round", "#0057D8", lambda: self.new_round(1), 10, 0, 2],
+                [self.hints_stats_frame, "Next Round", "#0057D8", lambda: self.new_round(quiz_type), 10, 0, 2],
                 [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
                 [self.hints_stats_frame, "Stats", "#333333", "", 10, 0, 1],
                 [self.quiz_frame, "End", "#990000", self.close_play, 33, 7, None]
@@ -280,8 +283,11 @@ class Play:
             self.stats_button = control_ref_list[2]
             self.end_quiz_button = control_ref_list[3]
 
+            self.new_round(quiz_type)
 
-        if quiz_type == 2:
+
+        if quiz_type == 2 or self.current_quiz_type == 2:
+
             self.target_description = StringVar
 
             # Rounds played | start with zero
@@ -354,7 +360,7 @@ class Play:
 
             # List for buttons (frame | text | bg | command | width | row | column )
             control_button_list = [
-                [self.hints_stats_frame, "Next Round", "#0057D8", lambda: self.new_round(2), 10, 0, 2],
+                [self.hints_stats_frame, "Next Round", "#0057D8", lambda: self.new_round(quiz_type), 10, 0, 2],
                 [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
                 [self.hints_stats_frame, "Stats", "#333333", "", 10, 0, 1],
                 [self.quiz_frame, "End", "#990000", self.close_play, 33, 7, None]
@@ -375,15 +381,16 @@ class Play:
             self.stats_button = control_ref_list[2]
             self.end_quiz_button = control_ref_list[3]
 
-            self.new_round(2)
+            self.new_round(quiz_type)
 
 
-    def new_round(self, quiz_type):
+    def new_round(self, current_quiz_type):
         # Retrieve number of rounds played, add one to it and configure heading
         rounds_played = self.rounds_played.get()
         rounds_played += 1
         self.rounds_played.set(rounds_played)
         rounds_wanted = self.rounds_wanted.get()
+        quiz_type = current_quiz_type
 
         if quiz_type == 1:
             # Get round colours and median score...
