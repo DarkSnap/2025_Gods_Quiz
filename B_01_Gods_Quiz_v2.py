@@ -52,12 +52,12 @@ class StartQuiz:
         self.start_frame.grid()
 
         # Strings for labels
-        intro_string = ("Greek/Roman:\n"
+        intro_string = ("Greek/Roman:\n\n"
                      "By selecting Greek/Roman you will get a god/goddess's name, "
                      "you have pick whether the god/goddess is of greek or roman origin.\n"
-                     "God's Name\n"
+                     "God's Name\n\n"
                      "By selecting God's Name you will get a description for a god/goddess "
-                     "you will be given 4 options, 1 of them is the correct god.\n"
+                     "you will be given 4 options, 1 of them is the correct god.\n\n"
                      "Mixed: Takes questions from both Greek/Roman and God's Name Quiz randomly.")
 
         choose_string = "How many rounds do you want to play?"
@@ -74,13 +74,11 @@ class StartQuiz:
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1],
                                fg=item[2],
-                               wraplength=550, justify="left", pady=10, padx=20)
+                               wraplength=500, justify="left", pady=10, padx=20, bg="#ffe6cc")
             make_label.grid(row=count)
 
             start_label_ref.append(make_label)
 
-        # Extract choice label so that it can be changed into an
-        # error message if necessary.
         self.choose_label = start_label_ref[2]
 
         # Frame so that entry box and button can be in the same row.
@@ -129,6 +127,11 @@ class StartQuiz:
                                   command=self.check_rounds_quiz)
         self.play_button.grid(row=2, column=1)
 
+        recolour_list = [self.start_frame, self.quiztype_area_frame, self.entry_area_frame, self.choose_label]
+
+        for item in recolour_list:
+            item.config(bg="#ffe6cc")
+
     def check_rounds_quiz(self):
         """
         Checks users have entered 1 or more rounds and the quiz type
@@ -153,7 +156,7 @@ class StartQuiz:
             try:
                 rounds_wanted = int(rounds_wanted)
                 if rounds_wanted > 0:
-                    # Invoke Player Class (and take across number of rounds)
+                    # Stats Quiz with Quiz Type
                     Play(rounds_wanted, quiz_type)
                     # Hide root window
                     root.withdraw()
@@ -209,6 +212,7 @@ class Play:
 
         body_font = ("Arial", 12)
 
+        # Creates Labels for Config
         self.heading_label = Label(self.quiz_frame, text="Round # of #", font=("Arial", 16, "bold"))
         self.heading_label.grid(row=0, pady=10)
 
@@ -267,7 +271,7 @@ class Play:
 
             control_ref_list.append(make_control_button)
 
-        # Retrieve next, stats and end button so that they can be configured.
+        # next, stats and end button so that they can be configured.
         self.next_button = control_ref_list[0]
         self.info_button = control_ref_list[1]
         self.stats_button = control_ref_list[2]
@@ -278,6 +282,11 @@ class Play:
         self.stats_button.config(state=DISABLED)
 
         self.next_quiz_type()
+
+        recolour_list = [self.info_stats_frame, self.gods_name_frame, self.quiz_frame, self.answer_frame, self.play_box, self.heading_label, self.results_label]
+
+        for item in recolour_list:
+            item.config(bg="#ffe6cc")
 
     def next_quiz_type(self):
         # Checks if quiz type is mixed
@@ -294,9 +303,11 @@ class Play:
         rounds_wanted = self.rounds_wanted.get()
 
         if current_quiz_type == 1:
+            # Gets god's name and answer
             self.round_god, round_god_origin = get_round_gods_desc(1)
             self.target_description = round_god_origin
 
+            # Edits labels
             self.heading_label.config(text=f"Round {rounds_played} of {rounds_wanted}")
             self.target_label.config(text=f"Is {self.round_god} a Greek or Roman god?", font=("Arial", 14, "bold"))
             self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
@@ -308,9 +319,11 @@ class Play:
             self.gods_name_frame.grid_forget()
 
         elif current_quiz_type == 2:
+            # Gets gods description and answer options
             self.round_gods_list, description = get_round_gods_desc(2)
             self.target_description = description
 
+            # Edits labels
             self.heading_label.config(text=f"Round {rounds_played} of {rounds_wanted}")
             self.target_label.config(text=f"Who is the God of {description}?", font=("Arial", 14, "bold"))
             self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
@@ -435,6 +448,7 @@ class DisplayInfo:
         self.rounds_played = rounds_played
 
         # Setup info box
+        background = "#ffe6cc"
         self.info_box = Toplevel()
 
         # Disable info box
@@ -486,12 +500,18 @@ class DisplayInfo:
                                      command=partial(self.close_info, partner))
         self.dismiss_button.grid(row=2, padx=10, pady=10)
 
+        recolour_list = [self.info_frame, self.info_heading_label,
+                         self.info_text_label]
+
+        for item in recolour_list:
+            item.config(bg=background)
+
     def close_info(self, partner):
         """
         Closes info dialogue box (and enables info button
         """
 
-        # Put help button back to normal...
+        # Put help button back to normal
         partner.info_button.config(state=NORMAL)
         partner.end_quiz_button.config(state=NORMAL)
 
@@ -509,7 +529,7 @@ class DisplayInfo:
             for item in partner.gods_button_ref:
                 item.config(state=DISABLED)
 
-        # Put info button back to normal...
+        # Put info button back to normal
         if self.rounds_played >=1:
             partner.info_button.config(state=NORMAL)
         self.info_box.destroy()
@@ -519,6 +539,8 @@ class DisplayInfo:
 class Stats:
 
     def __init__(self, partner, all_stats_info):
+
+        background = "#ffe6cc"
 
         # Disable buttons to prevent programs crashing
         partner.next_button.config(state=DISABLED)
@@ -582,7 +604,7 @@ class Stats:
         for count, item in enumerate(all_stats_strings):
             self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
                                      anchor="nw", justify="left",
-                                     padx=30, pady=5)
+                                     padx=30, pady=5, bg="#ffe6cc")
             self.stats_label.grid(row=count, sticky=item[2], padx=10)
             stats_label_ref_list.append(self.stats_label)
 
@@ -602,6 +624,7 @@ class Stats:
         # Create inner frame inside canvas
         results_frame = Frame(canvas)
         canvas.create_window((0, 0), window=results_frame, anchor='nw')
+
 
         # Add result labels
         for i in range(self.rounds_played):
@@ -627,10 +650,15 @@ class Stats:
         # Dismiss button
         self.dismiss_button = Button(self.stats_frame,
                                      font=("Arial", "16", "bold"),
-                                     text="Dismiss", bg="#333333",
+                                     text="Dismiss", bg="#CC6600",
                                      fg="#FFFFFF", width=20,
                                      command=partial(self.close_stats, partner))
         self.dismiss_button.grid(row=8, padx=10, pady=10)
+
+        recolour_list = [self.results_frame ,self.stats_label, self.stats_box, self.stats_frame]
+
+        for item in recolour_list:
+            item.config(bg=background)
 
     def close_stats(self, partner):
         """
