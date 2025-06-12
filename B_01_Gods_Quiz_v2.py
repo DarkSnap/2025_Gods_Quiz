@@ -3,9 +3,6 @@ import random
 from tkinter import *
 from functools import partial
 
-
-# Helper functions go here
-
 def get_gods_name_desc():
     """Retrieves gods from CSV file."""
     with open("gods.csv", "r", newline="", encoding="utf-8") as file:
@@ -45,7 +42,7 @@ class StartQuiz:
     def __init__(self):
 
         """
-        Gets number of rounds from user
+        Gets the number of rounds from the user
         """
 
         self.start_frame = Frame(padx=60, pady=30)
@@ -53,8 +50,8 @@ class StartQuiz:
 
         # Strings for labels
         intro_string = ("Greek/Roman:\n\n"
-                     "By selecting Greek/Roman you will get a god/goddess's name, "
-                     "you have pick whether the god/goddess is of greek or roman origin.\n"
+                     "By selecting Greek/Roman, you will get a god/goddess's name, "
+                     "you have to pick whether the god/goddess is of greek or roman origin.\n"
                      "God's Name\n\n"
                      "By selecting God's Name you will get a description for a god/goddess "
                      "you will be given 4 options, 1 of them is the correct god.\n\n"
@@ -158,7 +155,6 @@ class StartQuiz:
                 if rounds_wanted > 0:
                     # Stats Quiz with Quiz Type
                     Play(rounds_wanted, quiz_type)
-                    # Hide root window
                     root.withdraw()
 
                 else:
