@@ -140,7 +140,7 @@ class StartQuiz:
         self.choose_label.config(fg="#009900", font=("Arial", "16", "bold"))
         self.num_rounds_entry.config(bg="#FFFFFF")
 
-        rounds_error = "Oops - Please choose a whole number more then zero"
+        rounds_error = "Oops - Please choose a whole number more then zero, and less than 50"
         has_errors = False
         quiz_error = "Oops - Please choose a quiz type"
 
@@ -150,7 +150,7 @@ class StartQuiz:
             # Checks that rounds to be player is a number above zero
             try:
                 rounds_wanted = int(rounds_wanted)
-                if rounds_wanted > 0:
+                if rounds_wanted >= 0 and rounds_wanted <= 50:
                     # Stats Quiz with Quiz Type
                     Play(rounds_wanted, quiz_type)
                     root.withdraw()
