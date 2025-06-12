@@ -3,12 +3,12 @@ import random
 from tkinter import *
 from functools import partial
 
+
 def get_gods_name_desc():
     """Retrieves gods from CSV file."""
     with open("gods.csv", "r", newline="", encoding="utf-8") as file:
         all_gods = list(csv.reader(file, delimiter=","))
 
-    # Remove header row
     if all_gods:
         all_gods.pop(0)
 
@@ -42,20 +42,18 @@ class StartQuiz:
     def __init__(self):
 
         """
-        Gets the number of rounds from the user
+        Gets number of rounds from user
         """
 
         self.start_frame = Frame(padx=60, pady=30)
         self.start_frame.grid()
 
         # Strings for labels
-        intro_string = ("Greek/Roman:\n\n"
-                     "By selecting Greek/Roman, you will get a god/goddess's name, "
-                     "you have to pick whether the god/goddess is of greek or roman origin.\n"
-                     "God's Name\n\n"
-                     "By selecting God's Name you will get a description for a god/goddess "
+        intro_string = ("Greek/Roman - By selecting Greek/Roman you will get a god/goddess's name, "
+                     "you have pick whether the god/goddess is of greek or roman origin.\n\n"
+                     "God's Name - By selecting God's Name you will get a description for a god/goddess "
                      "you will be given 4 options, 1 of them is the correct god.\n\n"
-                     "Mixed: Takes questions from both Greek/Roman and God's Name Quiz randomly.")
+                     "Mixed - Takes questions from both Greek/Roman and God's Name Quiz randomly.")
 
         choose_string = "How many rounds do you want to play?"
 
@@ -71,7 +69,7 @@ class StartQuiz:
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1],
                                fg=item[2],
-                               wraplength=500, justify="left", pady=10, padx=20, bg="#ffe6cc")
+                               wraplength=600, justify="left", pady=10, padx=20, bg="#ffe6cc")
             make_label.grid(row=count)
 
             start_label_ref.append(make_label)
@@ -90,7 +88,7 @@ class StartQuiz:
         self.quiz_type = StringVar()
         self.quiz_type.set("0")
 
-        # Radio Buttons | Allows user to select whether they play the Greek / Roman Quiz or Gods Name Quiz
+        # Radio Buttons, allows user to select whether they play the Greek / Roman Quiz or Gods Name Quiz
         self.greek_roman_quiz_select = Radiobutton(self.quiztype_area_frame, font=("Arial", "20", "bold"),
                                                    variable=self.quiz_type,
                                                    value=1, indicator=0, text="Greek / Roman", width=12, height=1,
@@ -339,7 +337,7 @@ class Play:
         self.current_round.append(rounds_played)
 
         if quiz_type == 1:
-            # Get user score on button press...
+            # Get user score on button press
             score = user_choice
 
             # Retrieve target and compare with user score to find round results
@@ -669,6 +667,7 @@ class Stats:
         if self.rounds_played != self.rounds_wanted:
             partner.next_button.config(state=NORMAL)
 
+# Runs Program
 if __name__ == "__main__":
     root = Tk()
     root.title("God Quiz")
