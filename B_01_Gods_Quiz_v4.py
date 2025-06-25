@@ -12,9 +12,6 @@ def get_gods_name_desc():
     all_gods.pop(0) # Separates each row of the csv into separate lists of items
     return all_gods
 
-
-
-
 def get_round_gods_desc(quiz_type):
     """Choose gods depending on the quiz type."""
     all_gods_list = get_gods_name_desc()
@@ -23,18 +20,18 @@ def get_round_gods_desc(quiz_type):
         potential_god = random.choice(all_gods_list) # Selects random God/Goddess from list
         return potential_god[2], potential_god[0]
 
-    elif quiz_type == 2: # Gods Name Quiz, Selects 4 Gods, returns their names and one of their descriptions
+    elif quiz_type == 2: # Gods Name Quiz, Selects 4 Gods
         round_gods = []
         round_god_description = set()
 
-        while len(round_gods) < 4: # Randomly selects 4 gods, skips if the same god is selected
+        while len(round_gods) < 4: # Randomly selects 4 gods
             potential_god = random.choice(all_gods_list)
-            if potential_god[3] not in round_god_description:
+            if potential_god[3] not in round_god_description: # Skips if the same god is selected
                 round_gods.append(potential_god)
                 round_god_description.add(potential_god[3])
 
         god_description = random.choice(list(round_god_description)) # Selects a god/goddess's description from available gods
-        return round_gods, god_description
+        return round_gods, god_description # Returns their names and one of their descriptions
 
 # Class starts here
 class StartQuiz:
@@ -92,32 +89,17 @@ class StartQuiz:
         self.quiz_type = StringVar()
         self.quiz_type.set("0")
 
-        ###
-        ### CHANGE TO LIST OF VALUES MAYBE CHANGE VALUE TO STRING IF CAN???
-        ### INDICATOR IS AS EXPECTED ELSE CAUSES WRONG BUTTON STYLE
-        ###
+        # Quiz Type radio button items list
+        quiz_type_list = [[self.quiztype_area_frame, ("Arial", "20", "bold"), self.quiz_type, 1, 0, "Greek / Roman", 12, 1, "#FF9999", "black", "#f5a3a3", 1, 0, 7, 10],
+                          [self.quiztype_area_frame, ("Arial", "20", "bold"), self.quiz_type, 2, 0, "God Name", 12, 1, "#96C5F7", "black", "#bbd8fa", 1, 1, 7, 10],
+                          [self.quiztype_area_frame, ("Arial", "20", "bold"), self.quiz_type, 3, 0, "Mixed", 12, 1, "#97F79C", "black", "#7cc580", 1, 2, 7, 10]]
+        quiz_type_ref_list = []
 
-        # Radio Buttons, allows user to select whether they play the Greek / Roman Quiz or Gods Name Quiz
-        self.greek_roman_quiz_select = Radiobutton(self.quiztype_area_frame, font=("Arial", "20", "bold"),
-                                                   variable=self.quiz_type,
-                                                   value=1, indicator=0, text="Greek / Roman", width=12, height=1,
-                                                   bg="#FF9999", fg="black", selectcolor="#f5a3a3")
-
-        self.greek_roman_quiz_select.grid(row=1, column=0, padx=7, pady=10)
-
-        self.god_name_quiz_select = Radiobutton(self.quiztype_area_frame, font=("Arial", "20", "bold"),
-                                                variable=self.quiz_type,
-                                                value=2, indicator=0, text="God Name", width=12,
-                                                bg="#96C5F7", fg="black", selectcolor="#bbd8fa")
-
-        self.god_name_quiz_select.grid(row=1, column=1, padx=7, pady=10)
-
-        self.mixed_quiz_select = Radiobutton(self.quiztype_area_frame, font=("Arial", "20", "bold"),
-                                                variable=self.quiz_type,
-                                                value=3, indicator=0, text="Mixed", width=12,
-                                                bg="#97F79C", fg="black", selectcolor="#7cc580")
-
-        self.mixed_quiz_select.grid(row=1, column=2, padx=7, pady=10)
+        # Indicator being set to 0 is expected as without being on zero it adds an unwanted dot for selection.
+        for item in quiz_type_list: # Creates radio buttons for quiz types [Frame | Font | Variable | Value | Indicator | text | Width | Height | Bg | Fg | Selectcolor | Row | Column | Pad X | Pad Y ]
+            make_quiz_type_buttons = Radiobutton(item[0], font=item[1], variable=item[2], value=item[3], indicator=0, text=item[5], width=item[6], height=item[7], bg=item[8], fg=item[9], selectcolor=item[10])
+            make_quiz_type_buttons.grid(row=item[11], column=item[12], padx=item[13], pady=item[14])
+            quiz_type_ref_list.append(make_quiz_type_buttons) # Adds Radio buttons to list
 
         # Gets number of rounds user wants to play
         self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", "20", "bold"),
@@ -190,6 +172,7 @@ class Play:
     def __init__(self, how_many, quiz_type):
 
         # Create lists and set info
+        self.round_god = ""
         self.stats_state = None # stat of the stats tab
         self.original_quiz_type = quiz_type # original quiz type to make sure questions type stay randomized in mixed quiz
         self.quiz_type = quiz_type # current round quiz type for greek/roman and gods description questions type
@@ -198,15 +181,15 @@ class Play:
         # Makes Rounds Played, Wanted and Won to integers
         self.rounds_played = IntVar()
         self.rounds_wanted = IntVar()
-        self.rounds_won = IntVar()
+        self.rounds_correct = IntVar()
 
         # Sets Rounds Played to 0, Wanted to user's input, Won to 0
         self.rounds_played.set(0)
         self.rounds_wanted.set(how_many)
-        self.rounds_won.set(0)
+        self.rounds_correct.set(0)
 
         # Lists for round results, Gods origins, Gods descriptions, Gods Names for labels/buttons, Each Round Number for Stats
-        self.all_score_list = []
+        self.all_selected_answer_list = []
         self.all_origin_list = []
         self.all_description_list = []
         self.round_gods_list = []
@@ -220,45 +203,46 @@ class Play:
 
         body_font = ("Arial", 12)
 
-        # Creates Labels for Config
+        # Creates Labels for quiz questions and result [Frame | Text | Font | Bg | Wrap length | row | pady | padx ]
+        self.main_labels_list = [[self.quiz_frame, "Round # of #", ("Arial", 16, "bold"), "#FFFFFF", 300, 0, 10, 0],
+                                  [self.quiz_frame, "", body_font, "#FFF2CC", 300, 1, 10, 10],
+                                  [self.quiz_frame, "", body_font, "#D5E8D4", 300, 2, 10, 0 ]]
+        self.main_labels_ref_list = []
 
-        #
-        # CHANGE TO STRINGS LIST
-        #
-        self.heading_label = Label(self.quiz_frame, text="Round # of #", font=("Arial", 16, "bold"))
-        self.heading_label.grid(row=0, pady=10)
+        for item in self.main_labels_list: # Makes labels from list information
+            make_main_labels = Label(item[0], text=item[1], font=item[2], bg=item[3], wraplength=item[4])
+            make_main_labels.grid(row=item[5], pady=item[6], padx=item[7])
+            self.main_labels_ref_list.append(make_main_labels)
 
-        self.target_label = Label(self.quiz_frame, text="", font=body_font, bg="#FFF2CC", wraplength=300, justify="left")
-        self.target_label.grid(row=1, pady=10, padx=10)
+        # Separates list items to config
+        self.heading_label = self.main_labels_ref_list[0]
+        self.question_label = self.main_labels_ref_list[1]
+        self.results_label = self.main_labels_ref_list[2]
 
-        self.results_label = Label(self.quiz_frame, text="", font=body_font, bg="#D5E8D4", wraplength=300)
-        self.results_label.grid(row=3, pady=10)
 
         # Button frame
         self.answer_frame = Frame(self.quiz_frame)
         self.answer_frame.grid(row=4)
 
-        # Greek/Roman (quiz type 1 buttons)
+        # list of items for making greek and roman quiz type buttons [frame/master | font | text | width | bg colour | fg colour | command | row | column]
+        self.greek_roman_button_list = [[self.answer_frame, ("Arial", 12, "bold"), "Greek", 20, "#ff9999", "black", partial(self.rounds_results, "Greek", 1), 0, 0],
+                                        [self.answer_frame, ("Arial", 12, "bold"), "Roman", 20, "#96c5f7", "black", partial(self.rounds_results, "Roman", 1), 0 ,1]]
+        self.greek_roman_button_ref_list = []
 
-        #
-        # CHANGE TO BUTTONS LIST
-        #
-        self.greek_roman_button_ref = []
-        self.greek_button = Button(self.answer_frame, font=("Arial", 12, "bold"), text="Greek", width=20,
-                                   bg="#ff9999", fg="black", command=partial(self.rounds_results, "Greek", 1))
-        self.greek_roman_button_ref.append(self.greek_button)
-        self.roman_button = Button(self.answer_frame, font=("Arial", 12, "bold"), text="Roman", width=20,
-                                   bg="#96c5f7", fg="black", command=partial(self.rounds_results, "Roman", 1))
-        self.greek_roman_button_ref.append(self.roman_button)
+        for item in self.greek_roman_button_list: # creates buttons and adds them to ref list
+            make_greek_roman_button = Button(item[0], font=item[1], text=item[2], width=item[3], bg=item[4], fg=item[5], command=item[6])
+            make_greek_roman_button.grid(row=item[7], column=item[8], padx=5, pady=5)
+            self.greek_roman_button_ref_list.append(make_greek_roman_button)
 
-        self.greek_button.grid(row=0, column=0, padx=5, pady=5)
-        self.roman_button.grid(row=0, column=1, padx=5, pady=5)
+        # sets buttons from ref list for config
+        self.greek_button = self.greek_roman_button_ref_list[0]
+        self.roman_button = self.greek_roman_button_ref_list[1]
 
         # Gods name (quiz type 2 buttons)
         self.gods_name_frame = Frame(self.answer_frame)
         self.gods_button_ref = []
         button_colors = ["#ff9999", "#96c5f7", "#a18eb3", "#9ac7bf"]
-        for i in range(4):
+        for i in range(4): # sets colours for buttons and sets them to the buttons in a 2x2 grid
             gods_button = Button(self.gods_name_frame, font=("Arial", 12, "bold"),
                                  text="Gods Name", width=20,
                                  bg=button_colors[i], fg="black", disabledforeground="#404040",
@@ -292,7 +276,8 @@ class Play:
         self.info_button = control_ref_list[1]
         self.stats_button = control_ref_list[2]
 
-        self.end_quiz_button = Button(self.quiz_frame, text="End", bg="#990000",font=("Arial", "16", "bold"), fg="white", command=self.close_play, width=33)
+        self.end_quiz_button = Button(self.quiz_frame, text="End", bg="#990000",font=("Arial", "16", "bold"), fg="white",
+                                      command=self.close_play, width=33) # Ends quiz when pressed
         self.end_quiz_button.grid(row=7, padx=5, pady=5)
 
         self.stats_button.config(state=DISABLED)
@@ -301,7 +286,7 @@ class Play:
 
         recolour_list = [self.info_stats_frame, self.gods_name_frame, self.quiz_frame, self.answer_frame, self.play_box, self.heading_label, self.results_label]
 
-        for item in recolour_list:
+        for item in recolour_list: # sets background colour for items in recolour list
             item.config(bg="#ffe6cc")
 
     def next_quiz_type(self):
@@ -311,16 +296,16 @@ class Play:
         self.new_round(self.quiz_type) # Starts random quiz type question
 
     def new_round(self, current_quiz_type):
-
-        self.stats_button.config(state=DISABLED)
+        
+        self.stats_button.config(state=DISABLED) # Disable stats button
         self.stats_state = None
-        rounds_played = self.rounds_played.get() + 1
+        rounds_played = self.rounds_played.get() + 1 # Increases rounds played by 1
         self.rounds_played.set(rounds_played)
-        rounds_wanted = self.rounds_wanted.get()
+        rounds_wanted = self.rounds_wanted.get() # gets rounds wanted
         button_colors = ["#ff9999", "#96c5f7", "#a18eb3", "#9ac7bf"] # button colours for buttons in quiz types
 
         self.heading_label.config(text=f"Round {rounds_played} of {rounds_wanted}")
-        self.results_label.config(text=f"{'=' * 7}", bg="#ffe6cc")
+        self.results_label.config(text=f"{'=' * 7}", bg="#ffe6cc") 
 
         if current_quiz_type == 1:
             # Gets god's name and answer
@@ -328,17 +313,17 @@ class Play:
             self.correct_answer = round_god_origin
 
             # Edits label
-            self.target_label.config(text=f"Is {self.round_god} a Greek or Roman god?", font=("Arial", 14, "bold"))
+            self.question_label.config(text=f"Is {self.round_god} a Greek or Roman god?", font=("Arial", 14, "bold"))
 
 
-            for item in self.greek_roman_button_ref:
-                item.config(state=NORMAL)
+            for item in self.greek_roman_button_ref_list:
+                item.config(state=NORMAL) # Makes buttons interactable
 
-            self.greek_button.config(bg="#ff9999")
+            self.greek_button.config(bg="#ff9999") # Sets buttons colours 
             self.roman_button.config(bg="#96c5f7")
-            self.greek_button.grid(row=0, column=0, padx=5, pady=5)
+            self.greek_button.grid(row=0, column=0, padx=5, pady=5) # Sets buttons in grid area
             self.roman_button.grid(row=0, column=1, padx=5, pady=5)
-            self.gods_name_frame.grid_forget()
+            self.gods_name_frame.grid_forget() # Removes gods names buttons if mixed quiz
 
         elif current_quiz_type == 2:
             # Gets gods description and answer options
@@ -346,81 +331,94 @@ class Play:
             self.correct_answer = description
 
             # Edits labels
-            self.target_label.config(text=f"Who is the God of {description}?", font=("Arial", 14, "bold"))
+            self.question_label.config(text=f"Who is the God of {description}?", font=("Arial", 14, "bold"))
 
-            for count, item in enumerate(self.gods_button_ref):
+            for count, item in enumerate(self.gods_button_ref): # Sets buttons text and colours 
                 item.config(text=self.round_gods_list[count][2], bg=button_colors[count], state=NORMAL)
 
-            self.greek_button.grid_forget()
+            self.greek_button.grid_forget() # Removes greek/roman buttons if mixed quiz
             self.roman_button.grid_forget()
             self.gods_name_frame.grid(row=0, column=0, columnspan=2)
 
         self.next_button.config(state=DISABLED)
 
     def rounds_results(self, user_choice, quiz_type):
-        rounds_won = self.rounds_won.get()
-        rounds_played = self.rounds_played.get()
+        rounds_correct = self.rounds_correct.get() # Gets rounds correct
+        rounds_played = self.rounds_played.get() # Gets total rounds
         self.current_round.append(rounds_played)
 
         if quiz_type == 1:
-            score = user_choice
-            target = self.correct_answer
+            selected_answer = user_choice
+            correct_answer = self.correct_answer
             round_god = self.round_god
-            self.all_origin_list.append(target)
+            self.all_origin_list.append(correct_answer)
 
-            if score == target:
+            if selected_answer == correct_answer:
                 result_text = f"{user_choice} was correct!!"
                 result_bg = "#82B366"  # green
-                self.all_score_list.append(result_text)
+                self.all_selected_answer_list.append(result_text)
 
-                rounds_won += 1
-                self.rounds_won.set(rounds_won)
+                rounds_correct += 1
+                self.rounds_correct.set(rounds_correct)
             else:
-                result_text = f"Oops {user_choice} was the incorrect origin for {round_god}. The correct answer was {target}"
+                result_text = f"Oops {user_choice} was the incorrect origin for {round_god}. The correct answer was {correct_answer}"
                 result_bg = "#F8CECC"  # red
-                self.all_score_list.append(result_text)
+                self.all_selected_answer_list.append(result_text)
 
             self.results_label.config(text=result_text, bg=result_bg)
 
             # Update button colors
-            for item in self.greek_roman_button_ref:
-                answer_text = item.cget('text')
-                if answer_text == target:
-                    item.config(state=DISABLED, bg="#82B366")  # green
+            if user_choice == "Greek":
+                self.roman_button.config(bg="#D9D9D9")
+                if user_choice != correct_answer:
+                    self.greek_button.config(bg="#FF6961")
                 else:
-                    item.config(state=DISABLED, bg="#D9D9D9")  # grey
+                    self.greek_button.config(bg="#82B366")
+            else:
+                self.greek_button.config(bg="#D9D9D9")
+                if user_choice != correct_answer:
+                    self.roman_button.config(bg="#FF6961")
+                else:
+                    self.roman_button.config(bg="#82B366")
+
+
+
 
         elif quiz_type == 2:
-            score = self.round_gods_list[user_choice][3]
+            selected_answer = self.round_gods_list[user_choice][3]
             gods_name = self.gods_button_ref[user_choice].cget('text')
-            target = self.correct_answer
-            self.all_description_list.append(target)
+            correct_answer = self.correct_answer
+            self.all_description_list.append(correct_answer)
 
-            if score == target:
+            if selected_answer == correct_answer:
                 result_text = f"{gods_name} was correct!!"
                 result_bg = "#82B366"  # green
-                self.all_score_list.append(result_text)
+                self.all_selected_answer_list.append(result_text)
 
-                rounds_won += 1
-                self.rounds_won.set(rounds_won)
+                rounds_correct += 1
+                self.rounds_correct.set(rounds_correct)
             else:
                 correct_god_name = ""
                 for god_data in self.round_gods_list:
-                    if god_data[3] == target:
+                    if god_data[3] == correct_answer:
                         correct_god_name = god_data[2]
                 result_text = f"Oops {gods_name} was incorrect. The correct god was {correct_god_name}"
                 result_bg = "#F8CECC"  # red
-                self.all_score_list.append(result_text)
+                self.all_selected_answer_list.append(result_text)
 
             self.results_label.config(text=result_text, bg=result_bg)
 
-            # Update button colors
-            for user_choice, item in enumerate(self.gods_button_ref):
-                item_score = self.round_gods_list[user_choice][3]
-                if item_score == target:
-                    item.config(state=DISABLED, bg="#82B366")  # green
+            for button, item in enumerate(self.gods_button_ref):
+                item.config(state=DISABLED)  # disable all buttons
+
+                # Only change color for the selected button
+                if button == user_choice:
+                    if self.round_gods_list[user_choice][3] != correct_answer:
+                        item.config(bg="#FF6961")  # red
+                    else:
+                        item.config(bg="#82B366") # green
                 else:
-                    item.config(state=DISABLED, bg="#D9D9D9")  # grey
+                    item.config(bg="#D9D9D9") # grey
 
         # Enable next/stats buttons
         self.next_button.config(state=NORMAL)
@@ -451,9 +449,9 @@ class Play:
         """
         Displays stats for playing quiz
         """
-        rounds_won = self.rounds_won.get()
+        rounds_correct = self.rounds_correct.get()
         rounds_wanted = self.rounds_wanted.get()
-        stats_bundle = [rounds_won, self.all_score_list, self.current_round, rounds_wanted]
+        stats_bundle = [rounds_correct, self.all_selected_answer_list, self.current_round, rounds_wanted]
         Stats(self, stats_bundle)
 
 
@@ -477,7 +475,7 @@ class DisplayInfo:
         partner.next_button.config(state=DISABLED)
 
         # Disable selection buttons
-        for item in partner.greek_roman_button_ref:
+        for item in partner.greek_roman_button_ref_list:
             item.config(state=DISABLED)
 
         for item in partner.gods_button_ref:
@@ -490,12 +488,12 @@ class DisplayInfo:
 
         self.info_frame = Frame(self.info_box, width=300,
                                 height=200)
-        self.info_frame.grid()
+        self.info_frame.grid() # Create frame for info
 
         self.info_heading_label = Label(self.info_frame,
                                         text="Info",
                                         font=("Arial", "14", "bold"))
-        self.info_heading_label.grid(row=0)
+        self.info_heading_label.grid(row=0) # Adds heading label to grid
 
         info_text = ("Gods Quiz\n\n"
                      "Greek/Roman:\n"
@@ -510,20 +508,20 @@ class DisplayInfo:
         self.info_text_label = Label(self.info_frame,
                                      text=info_text,
                                      wraplength=350, font=("Arial", "12"), justify="left")
-        self.info_text_label.grid(row=1, padx=10)
+        self.info_text_label.grid(row=1, padx=10) # Adds info next to grid
 
         self.dismiss_button = Button(self.info_frame,
                                      font=("Arial", "12", "bold"),
                                      text="Dismiss", bg="#CC6600",
                                      fg="#FFFFFF",
                                      command=partial(self.close_info, partner))
-        self.dismiss_button.grid(row=2, padx=10, pady=10)
+        self.dismiss_button.grid(row=2, padx=10, pady=10) # Adds close/dismiss button to grid
 
         recolour_list = [self.info_frame, self.info_heading_label,
                          self.info_text_label]
 
         for item in recolour_list:
-            item.config(bg=background)
+            item.config(bg=background) # Changes background color of items in list
 
     def close_info(self, partner):
         """
@@ -534,15 +532,16 @@ class DisplayInfo:
         partner.info_button.config(state=NORMAL)
         partner.end_quiz_button.config(state=NORMAL)
 
-        for item in partner.greek_roman_button_ref:
+        # Sets option buttons in greek/roman and gods quiz to normal
+        for item in partner.greek_roman_button_ref_list:
             item.config(state=NORMAL)
 
         for item in partner.gods_button_ref:
             item.config(state=NORMAL)
 
-        if partner.stats_state == "on":
+        if partner.stats_state == "on": # Checks if round has ended enabling stats button else leaves it disabled
             partner.stats_button.config(state=NORMAL)
-            for item in partner.greek_roman_button_ref:
+            for item in partner.greek_roman_button_ref_list:
                 item.config(state=DISABLED)
 
             for item in partner.gods_button_ref:
@@ -567,15 +566,15 @@ class Stats:
         partner.end_quiz_button.config(state=DISABLED)
         partner.stats_button.config(state=DISABLED)
 
-        for item in partner.greek_roman_button_ref:
+        for item in partner.greek_roman_button_ref_list:
             item.config(state=DISABLED)
 
         for item in partner.gods_button_ref:
             item.config(state=DISABLED)
 
         # Unpack all_stats_info
-        rounds_won = all_stats_info[0]
-        user_scores = all_stats_info[1]
+        rounds_correct = all_stats_info[0]
+        user_selected_answers = all_stats_info[1]
         round_number = all_stats_info[2]
         self.rounds_wanted = all_stats_info[3]
 
@@ -591,13 +590,13 @@ class Stats:
         self.stats_frame.grid()
 
         # Calculate success rate
-        self.rounds_played = len(user_scores)
-        success_rate = rounds_won / self.rounds_played * 100 if self.rounds_played > 0 else 0
+        self.rounds_played = len(user_selected_answers)
+        success_rate = rounds_correct / self.rounds_played * 100 if self.rounds_played > 0 else 0
 
         # Stats strings
-        success_string = f"Success Rate: {rounds_won} / {self.rounds_played} ({success_rate:.0f}%)"
+        success_string = f"Success Rate: {rounds_correct} / {self.rounds_played} ({success_rate:.0f}%)"
 
-        if rounds_won == 0:
+        if rounds_correct == 0:
             comment_string = "Oops - You've got every round incorrect!"
             comment_colour = "#ff0000"
             comment_bg_colour = "#ffcdcd"
@@ -637,6 +636,7 @@ class Stats:
         canvas = Canvas(self.results_frame, width=450, height=300)
         canvas.grid(row=4, column=0)
 
+        # Function for scrolling up/down the canvas
         def _on_mousewheel(event):
             canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
@@ -647,9 +647,9 @@ class Stats:
 
         # Add result labels
         for i in range(self.rounds_played):
-            text = f"Round: {round_number[i]} | Result: {user_scores[i]}"
+            text = f"Round: {round_number[i]} | Result: {user_selected_answers[i]}"
 
-            if "oops" in user_scores[i].lower():  # Sets bg for label to red
+            if "oops" in user_selected_answers[i].lower():  # Sets bg for label to red
                 label = Label(results_frame, text=text, font=("arial", 12, "bold"),
                               justify="left", wraplength=400, padx=25, fg="red")
             else: # Sets bg for label to green
@@ -683,7 +683,7 @@ class Stats:
 
         recolour_list = [self.results_frame ,self.stats_label, self.stats_box, self.stats_frame]
 
-        for item in recolour_list:
+        for item in recolour_list: # Recolours backgrounds for items in list
             item.config(bg=background)
 
     def close_stats(self, partner):
