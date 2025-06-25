@@ -90,15 +90,15 @@ class StartQuiz:
         self.quiz_type.set("0")
 
         # Quiz Type radio button items list
-        quiz_type_list = [[self.quiztype_area_frame, ("Arial", "20", "bold"), self.quiz_type, 1, 0, "Greek / Roman", 12, 1, "#FF9999", "black", "#f5a3a3", 1, 0, 7, 10],
-                          [self.quiztype_area_frame, ("Arial", "20", "bold"), self.quiz_type, 2, 0, "God Name", 12, 1, "#96C5F7", "black", "#bbd8fa", 1, 1, 7, 10],
-                          [self.quiztype_area_frame, ("Arial", "20", "bold"), self.quiz_type, 3, 0, "Mixed", 12, 1, "#97F79C", "black", "#7cc580", 1, 2, 7, 10]]
+        quiz_type_list = [[self.quiztype_area_frame, ("Arial", "20", "bold"), 1, "Greek / Roman", 12, 1, "#FF9999", "black", "#f5a3a3", 1, 0, 7, 10],
+                          [self.quiztype_area_frame, ("Arial", "20", "bold"), 2, "God Name", 12, 1, "#96C5F7", "black", "#bbd8fa", 1, 1, 7, 10],
+                          [self.quiztype_area_frame, ("Arial", "20", "bold"), 3, "Mixed", 12, 1, "#97F79C", "black", "#7cc580", 1, 2, 7, 10]]
         quiz_type_ref_list = []
 
         # Indicator being set to 0 is expected as without being on zero it adds an unwanted dot for selection.
         for item in quiz_type_list: # Creates radio buttons for quiz types [Frame | Font | Variable | Value | Indicator | text | Width | Height | Bg | Fg | Selectcolor | Row | Column | Pad X | Pad Y ]
-            make_quiz_type_buttons = Radiobutton(item[0], font=item[1], variable=item[2], value=item[3], indicator=0, text=item[5], width=item[6], height=item[7], bg=item[8], fg=item[9], selectcolor=item[10])
-            make_quiz_type_buttons.grid(row=item[11], column=item[12], padx=item[13], pady=item[14])
+            make_quiz_type_buttons = Radiobutton(item[0], font=item[1], variable=self.quiz_type, value=item[2], indicator=0, text=item[3], width=item[4], height=item[5], bg=item[6], fg=item[7], selectcolor=item[8])
+            make_quiz_type_buttons.grid(row=item[9], column=item[10], padx=item[11], pady=item[12])
             quiz_type_ref_list.append(make_quiz_type_buttons) # Adds Radio buttons to list
 
         # Gets number of rounds user wants to play
@@ -139,19 +139,19 @@ class StartQuiz:
 
         # Checks that quiz type has been selected
         quiz_type = int(quiz_type)
+        if quiz_type >= 1:
+            try: # Checks if rounds wanted is valid
+                rounds_wanted = int(rounds_wanted)
+                if 1 <= rounds_wanted <= 50: # Starts Game if rounds wanted is valid
+                    # Stats Quiz with Quiz Type
+                    Play(rounds_wanted, quiz_type)
+                    root.withdraw()
 
-        try: # Checks if rounds wanted is valid
-            rounds_wanted = int(rounds_wanted)
-            if 1 <= rounds_wanted <= 50: # Starts Game if rounds wanted is valid
-                # Stats Quiz with Quiz Type
-                Play(rounds_wanted, quiz_type)
-                root.withdraw()
+                else: # Sends error if invalid rounds
+                    has_errors = True
 
-            else: # Sends error if invalid rounds
+            except ValueError: # Sends error if ValueError
                 has_errors = True
-
-        except ValueError: # Sends error if ValueError
-            has_errors = True
 
         # Display the rounds error if necessary
         if has_errors: # Edits Label with rounds_error string
